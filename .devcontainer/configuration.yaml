@@ -1,20 +1,17 @@
 default_config:
+http:
+  server_port:                   8123
+
 logger:
-  default: error
+  default:                         debug
   logs:
-    custom_components.blueprint: debug
+    # log level for HA core
+    homeassistant.core:            debug
 
+    # log level for this custom component
+    custom_components.hdmimatrix:  debug
 
+    # log level for the `aiohttp` Python package
+    aiohttp:                       debug
 
-blueprint:
-  username: my_username
-  password: my_password
-  binary_sensor:
-    - enabled: true
-      name: My custom name
-  sensor:
-    - enabled: true
-      name: My custom name
-  switch:
-    - enabled: true
-      name: My custom name
+hdmimatrix:                      !include hdmimatrix.yaml

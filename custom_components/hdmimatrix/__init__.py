@@ -1,8 +1,8 @@
 """
-Component to integrate with blueprint.
+Component to integrate with generic HDMI matrix.
 
 For more details about this component, please refer to
-https://github.com/custom-components/blueprint
+https://github.com/troykelly/homeassistant-generic-hdmimatrix
 """
 import os
 from datetime import timedelta
@@ -20,11 +20,12 @@ from .const import (
     CONF_BINARY_SENSOR,
     CONF_ENABLED,
     CONF_NAME,
-    CONF_PASSWORD,
+    CONF_PORT,
     CONF_SENSOR,
     CONF_SWITCH,
-    CONF_USERNAME,
+    CONF_HOSTNAME,
     DEFAULT_NAME,
+    DEFAULT_PORT,
     DOMAIN_DATA,
     DOMAIN,
     ISSUE_URL,
@@ -62,8 +63,8 @@ CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {
-                vol.Optional(CONF_USERNAME): cv.string,
-                vol.Optional(CONF_PASSWORD): cv.string,
+                vol.Optional(CONF_HOSTNAME): cv.string,
+                vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.port,
                 vol.Optional(CONF_BINARY_SENSOR): vol.All(
                     cv.ensure_list, [BINARY_SENSOR_SCHEMA]
                 ),
@@ -79,7 +80,7 @@ CONFIG_SCHEMA = vol.Schema(
 async def async_setup(hass, config):
     """Set up this component using YAML."""
     if config.get(DOMAIN) is None:
-        # We get her if the integration is set up using config flow
+        # We get here if the integration is set up using config flow
         return True
 
     # Print startup message
@@ -96,12 +97,12 @@ async def async_setup(hass, config):
     hass.data[DOMAIN_DATA] = {}
 
     # Get "global" configuration.
-    username = config[DOMAIN].get(CONF_USERNAME)
-    password = config[DOMAIN].get(CONF_PASSWORD)
+    hostname = config[DOMAIN].get(CONF_HOSTNAME)
+    port = config[DOMAIN].get(CONF_PORT)
 
     # Configure the client.
-    client = Client(username, password)
-    hass.data[DOMAIN_DATA]["client"] = BlueprintData(hass, client)
+    client = Client(hostname, port)
+    hass.data[DOMAIN_DATA]["client"] = HDMIMatrixData(hass, client)
 
     # Load platforms
     for platform in PLATFORMS:
@@ -156,12 +157,12 @@ async def async_setup_entry(hass, config_entry):
     hass.data[DOMAIN_DATA] = {}
 
     # Get "global" configuration.
-    username = config_entry.data.get(CONF_USERNAME)
-    password = config_entry.data.get(CONF_PASSWORD)
+    hostname = config_entry.data.get(CONF_HOSTNAME)
+    port = config_entry.data.get(CONF_PORT)
 
     # Configure the client.
-    client = Client(username, password)
-    hass.data[DOMAIN_DATA]["client"] = BlueprintData(hass, client)
+    client = Client(hostname, port)
+    hass.data[DOMAIN_DATA]["client"] = HDMIMatrixData(hass, client)
 
     # Add binary_sensor
     hass.async_add_job(
@@ -181,7 +182,7 @@ async def async_setup_entry(hass, config_entry):
     return True
 
 
-class BlueprintData:
+class HDMIMatrixData:
     """This class handle communication and stores the data."""
 
     def __init__(self, hass, client):

@@ -1,0 +1,19 @@
+---
+version:                '2'
+services:
+  homeassistant:
+    container_name:     home-assistant
+    image:              homeassistant/home-assistant:beta
+    volumes:
+    - config-homeassistant:/config:rw
+    - ./configuration.yaml:/config/configuration.yaml:ro
+    - ./hdmimatrix.yaml:/config/hdmimatrix.yaml:ro
+    - ../custom_components:/config/custom_components:ro
+    environment:
+      - TZ=America/New_York
+    restart:            unless-stopped
+    ports:
+          - "8123:8123"
+    # network_mode:       host
+volumes:
+  config-homeassistant:

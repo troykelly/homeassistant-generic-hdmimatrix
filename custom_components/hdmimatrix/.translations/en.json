@@ -1,9 +1,9 @@
 {
     "config": {
-        "title": "Blueprint",
+        "title": "HDMI Matrix",
         "step": {
             "user": {
-                "title": "Blueprint",
+                "title": "HDMI Matrix",
                 "description": "If you need help with the configuration have a look here: https://github.com/custom-components/blueprint",
                 "data": {
                     "username": "Username",
